@@ -31,10 +31,6 @@ public class TarefaService {
         newTarefa.get().setDescricao(tarefa.getDescricao());
         newTarefa.get().setStatus(tarefa.getStatus());
         newTarefa.get().setPrioridade(tarefa.getPrioridade());
-        newTarefa.get().setDataCriacao(tarefa.getDataCriacao());
-        newTarefa.get().setDataConclusao(tarefa.getDataConclusao());
-        newTarefa.get().setDataEntrega(tarefa.getDataEntrega());
-        newTarefa.get().setDataLimite(tarefa.getDataLimite());
     }
 
     public List<Tarefa> listaDeTodasTarefas(){
