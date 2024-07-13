@@ -13,7 +13,7 @@
 ### Funcionalidades
 - Criação para usuários.
 - Listagem de usuarios.
-- Authenticação via token JWT.
+- Autenticação via token JWT.
 - CRUD para tarefas.
 
 ## Como utilizar
