@@ -27,18 +27,26 @@ public class SecurityFilter extends OncePerRequestFilter {
     private UsuarioRepositoy usuarioRepositoy;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+    protected void doFilterInternal(@SuppressWarnings("null") HttpServletRequest request, @SuppressWarnings("null") HttpServletResponse response, @SuppressWarnings("null") FilterChain filterChain)
             throws ServletException, IOException {
-        var token = this.recoverToken(request);
+        var token = recoverToken(request);
         if (token != null) {
-            var username = tokenService.validacaoToken(token);
-            Optional<Usuario> usuarioDetalhesOptional = usuarioRepositoy.findByUsername(username);
+            try {
+                var username = tokenService.validacaoToken(token);
+                Optional<Usuario> usuarioDetalhesOptional = usuarioRepositoy.findByUsername(username);
 
-            if (usuarioDetalhesOptional.isPresent()) {
-                Usuario usuarioDetalhes = usuarioDetalhesOptional.get();
-                var authentication = new UsernamePasswordAuthenticationToken(usuarioDetalhes, null,
-                        usuarioDetalhes.getAuthorities());
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                if (usuarioDetalhesOptional.isPresent()) {
+                    Usuario usuarioDetalhes = usuarioDetalhesOptional.get();
+                    var authentication = new UsernamePasswordAuthenticationToken(usuarioDetalhes, null,
+                            usuarioDetalhes.getAuthorities());
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                } else {
+                    // Log para quando o usuário não for encontrado
+                    System.out.println("Usuário não encontrado para o token fornecido.");
+                }
+            } catch (Exception e) {
+                // Log de erro na validação do token ou autenticação
+                System.out.println("Erro ao validar token: " + e.getMessage());
             }
         }
         filterChain.doFilter(request, response);
@@ -46,8 +54,9 @@ public class SecurityFilter extends OncePerRequestFilter {
 
     private String recoverToken(HttpServletRequest request) {
         var authHeader = request.getHeader("Authorization");
-        if (authHeader == null)
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return null;
+        }
         return authHeader.replace("Bearer ", "");
     }
 
